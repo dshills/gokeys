@@ -18,7 +18,7 @@ A vendor-grade, cross-terminal keyboard input system for Go. Provides clean, nor
 - 🌍 **UTF-8 Support** - Full multi-byte character decoding (2, 3, 4-byte chars including emoji)
 - ⚡ **High Performance** - Zero-allocation input processing, <1ms latency
 - 🔒 **Thread Safe** - Safe for concurrent use across goroutines
-- 🖥️ **Cross-Platform** - Works on Linux, macOS, Windows
+- 🖥️ **Cross-Platform Design** - Architected for Linux, macOS, Windows (macOS tested)
 - 📦 **Zero Dependencies** - Standard library only
 
 ### GameInput API (Optional)
@@ -342,30 +342,36 @@ BenchmarkBind-10                            60,530,014    19.73 ns/op     8 B/op
 
 ## Platform Support
 
-### Tested Platforms
+### Currently Tested
 
-- ✅ **Linux** - Tested on Ubuntu, Debian, Arch
-- ✅ **macOS** - Tested on macOS 10.15+
-- ✅ **Windows** - Tested on Windows 10/11
+- ✅ **macOS** - Actively tested on macOS (darwin/arm64)
+
+### Designed For (Not Yet Tested)
+
+The codebase includes platform-specific backends designed to support:
+
+- 🔶 **Linux** - termios-based implementation (needs testing)
+- 🔶 **Windows** - Console API implementation (needs testing)
+
+**⚠️ Community Testing Needed**: While the code is architected for cross-platform support with separate backends for Unix and Windows, comprehensive testing on Linux and Windows systems is still needed. Contributions and test reports from these platforms are welcome!
 
 ### Terminal Compatibility
 
-Works with all major terminal emulators:
+The implementation is designed to work with standard terminal emulators that support:
+- VT100/ANSI escape sequences
+- Raw mode / cbreak mode
+- UTF-8 encoding
 
-- iTerm2
-- Terminal.app
-- xterm
-- gnome-terminal
-- Windows Terminal
-- Console2/ConsoleZ
-- And many more...
+**Examples**: iTerm2, Terminal.app, xterm, gnome-terminal, Windows Terminal, etc.
+
+**Note**: Actual compatibility should be verified on your specific terminal.
 
 ### Backend Implementation
 
 - **Unix/Linux/macOS**: termios-based raw mode
 - **Windows**: Console API with virtual terminal support
 
-All backends normalize escape sequences and key codes to produce identical Event values.
+All backends are designed to normalize escape sequences and key codes to produce identical Event values across platforms.
 
 ## Testing
 
@@ -542,7 +548,7 @@ game.Bind("jump", input.KeyJ)  // Replaces Space with J
 
 ### Q: What about Windows support?
 
-Fully supported via Windows Console API with virtual terminal sequences.
+The code includes a Windows backend using the Console API with virtual terminal sequences, but it has not been tested yet. Community testing and feedback on Windows platforms would be greatly appreciated!
 
 ## Contributing
 
