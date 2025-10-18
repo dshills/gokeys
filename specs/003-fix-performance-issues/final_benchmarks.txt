@@ -1,0 +1,10 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/dshills/gokeys/input
+cpu: Apple M4
+BenchmarkParseASCII-10              	42047458	        29.77 ns/op	       0 B/op	       0 allocs/op
+BenchmarkParseUTF8_2byte-10         	41949363	        31.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkParseUTF8_3byte-10         	41902977	        29.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkParseUTF8_4byte-10         	41275645	        28.83 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/dshills/gokeys/input	6.145s
