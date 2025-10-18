@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Run tests
+      run: go test -v -race ./...
+
+    - name: Run benchmarks
+      run: go test -bench=. -benchmem -run=^$ ./input > benchmark-release.txt
+
+    - name: Build examples
+      run: |
+        mkdir -p release/examples
+        GOOS=linux GOARCH=amd64 go build -o release/examples/gokeys-basic-linux-amd64 ./examples/basic
+        GOOS=darwin GOARCH=amd64 go build -o release/examples/gokeys-basic-darwin-amd64 ./examples/basic
+        GOOS=darwin GOARCH=arm64 go build -o release/examples/gokeys-basic-darwin-arm64 ./examples/basic
+        GOOS=windows GOARCH=amd64 go build -o release/examples/gokeys-basic-windows-amd64.exe ./examples/basic
+
+        GOOS=linux GOARCH=amd64 go build -o release/examples/gokeys-game-linux-amd64 ./examples/game
+        GOOS=darwin GOARCH=amd64 go build -o release/examples/gokeys-game-darwin-amd64 ./examples/game
+        GOOS=darwin GOARCH=arm64 go build -o release/examples/gokeys-game-darwin-arm64 ./examples/game
+        GOOS=windows GOARCH=amd64 go build -o release/examples/gokeys-game-windows-amd64.exe ./examples/game
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        echo "## What's Changed" > CHANGELOG.md
+        git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"- %s (%h)" >> CHANGELOG.md
+        echo "" >> CHANGELOG.md
+        echo "## Benchmarks" >> CHANGELOG.md
+        cat benchmark-release.txt >> CHANGELOG.md
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        body_path: CHANGELOG.md
+        files: |
+          release/examples/*
+          benchmark-release.txt
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-docs:
+    name: Publish Documentation
+    runs-on: ubuntu-latest
+    needs: release
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Generate godoc
+      run: |
+        go install golang.org/x/tools/cmd/godoc@latest
+        echo "Documentation available at https://pkg.go.dev/github.com/dshills/gokeys"

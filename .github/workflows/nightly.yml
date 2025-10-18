@@ -1,0 +1,95 @@
+name: Nightly Tests
+
+on:
+  schedule:
+    # Run every day at 2am UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  comprehensive-test:
+    name: Comprehensive Platform Testing
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-latest, macos-12, macos-13, macos-latest, windows-2019, windows-2022, windows-latest]
+        go-version: ['1.21', '1.22', '1.23']
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Run comprehensive tests
+      run: |
+        go test -v -race -count=3 ./...
+        go test -v -bench=. -benchmem ./input
+
+    - name: Test examples (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        go build -v ./examples/basic
+        go build -v ./examples/poll
+        go build -v ./examples/next
+        go build -v ./examples/game
+
+    - name: Test examples (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        go build -v ./examples/basic
+        go build -v ./examples/poll
+        go build -v ./examples/next
+        go build -v ./examples/game
+
+  stress-test:
+    name: Stress Testing
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Run stress tests
+      run: |
+        # Run tests multiple times to catch race conditions
+        for i in {1..10}; do
+          echo "Run $i/10"
+          go test -race -count=1 ./...
+        done
+
+    - name: Long-running benchmark
+      run: |
+        go test -bench=. -benchtime=10s -benchmem ./input
+
+  report:
+    name: Generate Test Report
+    needs: [comprehensive-test, stress-test]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create issue on failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Nightly tests failed',
+            body: 'The nightly test suite has failed. Please investigate.\n\nWorkflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+            labels: ['bug', 'ci']
+          })

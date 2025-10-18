@@ -1,7 +1,9 @@
 # gokeys
 
+[![CI](https://github.com/dshills/gokeys/workflows/CI/badge.svg)](https://github.com/dshills/gokeys/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/dshills/gokeys.svg)](https://pkg.go.dev/github.com/dshills/gokeys)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dshills/gokeys)](https://goreportcard.com/report/github.com/dshills/gokeys)
+[![codecov](https://codecov.io/gh/dshills/gokeys/branch/main/graph/badge.svg)](https://codecov.io/gh/dshills/gokeys)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A vendor-grade, cross-terminal keyboard input system for Go. Provides clean, normalized keyboard input handling across different terminals and platforms, with optional high-level action mapping for game development.
@@ -342,18 +344,31 @@ BenchmarkBind-10                            60,530,014    19.73 ns/op     8 B/op
 
 ## Platform Support
 
-### Currently Tested
+### Automated CI Testing
 
-- ✅ **macOS** - Actively tested on macOS (darwin/arm64)
+Our GitHub Actions CI automatically tests on every commit:
 
-### Designed For (Not Yet Tested)
+- ✅ **Linux**: Ubuntu 20.04, 22.04, and latest
+- ✅ **macOS**: macOS 12, 13, and latest
+- ✅ **Windows**: Windows 2019, 2022, and latest
+- ✅ **Go versions**: 1.21, 1.22, 1.23
 
-The codebase includes platform-specific backends designed to support:
+[![CI Status](https://github.com/dshills/gokeys/workflows/CI/badge.svg)](https://github.com/dshills/gokeys/actions/workflows/ci.yml)
 
-- 🔶 **Linux** - termios-based implementation (needs testing)
-- 🔶 **Windows** - Console API implementation (needs testing)
+All tests must pass on all platforms before code is merged.
 
-**⚠️ Community Testing Needed**: While the code is architected for cross-platform support with separate backends for Unix and Windows, comprehensive testing on Linux and Windows systems is still needed. Contributions and test reports from these platforms are welcome!
+### Manually Tested
+
+- ✅ **macOS** - Actively developed and tested on macOS (darwin/arm64)
+
+### Designed For
+
+The codebase includes platform-specific backends:
+
+- **Linux** - termios-based implementation (CI-tested, community feedback welcome)
+- **Windows** - Console API implementation (CI-tested, community feedback welcome)
+
+**Community Testing**: While CI validates the code compiles and tests pass on all platforms, real-world testing in different terminal emulators is valuable. Please report any issues you encounter!
 
 ### Terminal Compatibility
 
@@ -552,35 +567,41 @@ The code includes a Windows backend using the Console API with virtual terminal 
 
 ## Contributing
 
-Contributions are welcome! Please:
+Contributions are welcome! We appreciate bug reports, feature requests, and code contributions.
+
+### Quick Start
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (see commit message format below)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Make your changes with tests
+4. Ensure CI passes locally: `go test -race ./... && golangci-lint run`
+5. Commit with clear messages
+6. Push and open a Pull Request
 
-### Commit Message Format
+### Automated Testing
 
-```
-Brief description (50 chars or less)
+All pull requests are automatically tested on:
+- Linux (Ubuntu 20.04, 22.04, latest)
+- macOS (12, 13, latest)
+- Windows (2019, 2022, latest)
+- Go versions 1.21, 1.22, 1.23
 
-More detailed explanation if needed. Wrap at 72 characters.
+The CI must pass before merging.
 
-- Feature details
-- Bug fixes
-- Breaking changes
+### Platform Testing Needed
 
-Closes #123
-```
+We especially value testing and feedback on:
+- Different Linux distributions
+- Various terminal emulators
+- Windows environments
+- Edge cases and unusual configurations
 
-### Code Standards
-
-- All code must pass `golangci-lint run`
-- Maintain test coverage >80%
-- Add tests for new features
-- Update documentation
-- Follow existing code style
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines including:
+- Development setup
+- Testing procedures
+- Code standards
+- Commit message format
+- PR process
 
 ## License
 
