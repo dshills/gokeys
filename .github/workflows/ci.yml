@@ -46,13 +46,19 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Run tests
-      run: go test -v -race -coverprofile=./coverage.txt -covermode=atomic ./...
+    - name: Run tests (Unix)
+      if: runner.os != 'Windows'
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+    - name: Run tests (Windows)
+      if: runner.os == 'Windows'
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+      shell: cmd
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
-        files: ./coverage.txt
+        files: coverage.txt
         flags: ${{ matrix.os }}-go${{ matrix.go-version }}
         name: ${{ matrix.os }}-go${{ matrix.go-version }}
         fail_ci_if_error: false
