@@ -21,10 +21,27 @@ Provides low-level, cross-platform keyboard event handling with:
 - **UTF-8 Support**: Full multi-byte UTF-8 character decoding for international input (2-byte, 3-byte, 4-byte characters including emoji)
 - **Performance Optimizations**: Zero-allocation input processing using sync.Pool buffer reuse, <1ms latency for all key events
 
-### Higher Layer: Game/Application Input
-Optional higher-level API that provides:
-- Action mapping: Bind logical actions (e.g., "jump", "fire") to physical keys
-- Action queries: `IsActionPressed(action string)` for game logic
+### Higher Layer: GameInput API
+The `GameInput` interface provides action mapping for game development:
+- **Action Binding**: Map logical actions (e.g., "jump", "fire") to physical keys via `Bind(action string, keys ...Key)`
+- **Action Queries**: Check if actions are pressed via `IsActionPressed(action string) bool`
+- **Multiple Keys**: Support alternative control schemes (WASD + arrow keys)
+- **Runtime Rebinding**: Players can customize controls during gameplay
+- **Performance**: ~9ns per query, zero allocations, thread-safe concurrent access
+- **Example Usage**:
+  ```go
+  game := input.NewGameInput(nil)
+  game.Start()
+  defer game.Stop()
+
+  // Bind actions (supports multiple keys per action)
+  game.Bind("jump", input.KeySpace)
+  game.Bind("move-left", input.KeyLeft, input.KeyA)  // WASD + arrows
+
+  // Game loop
+  if game.IsActionPressed("jump") { player.Jump() }
+  if game.IsActionPressed("move-left") { player.MoveLeft() }
+  ```
 
 ### Key Design Decisions
 - **Thread Safety**: Input system maintains its own goroutine feeding a buffered channel
@@ -95,5 +112,14 @@ The core input system is implemented with:
 - ✅ Zero-allocation buffer management
 - ✅ Comprehensive test coverage (contract, integration, benchmarks)
 - ✅ Race condition testing and validation
+- ✅ GameInput action mapping API (specs/004-game-input-api/)
 
-See `spec/basic_spec.md` for the original design and `specs/003-fix-performance-issues/` for performance optimization details.
+### GameInput Features
+- ✅ Basic action binding (P1/MVP): Single actions to single keys
+- ✅ Multiple keys per action (P2): WASD + arrow key support
+- ✅ Dynamic rebinding (P3): Runtime control customization
+- ✅ Thread safety: Concurrent Bind/IsActionPressed calls (RWMutex)
+- ✅ Performance: 9ns/op single-key, 24ns/op multi-key, 0 allocations
+- ✅ Examples: See `examples/game/main.go` for complete game loop demo
+
+See `spec/basic_spec.md` for the original design, `specs/003-fix-performance-issues/` for performance optimization details, and `specs/004-game-input-api/` for GameInput specification.

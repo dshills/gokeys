@@ -22,10 +22,10 @@
 
 **Purpose**: Verify existing Input system and prepare for GameInput addition
 
-- [ ] T001 Verify existing Input interface is functional by running `go test ./input -v`
-- [ ] T002 [P] Verify golangci-lint configuration is working by running `golangci-lint run ./input`
-- [ ] T003 [P] Create examples/game/ directory for action mapping example
-- [ ] T004 [P] Create tests/contract/ directory if it doesn't exist
+- [X] T001 Verify existing Input interface is functional by running `go test ./input -v`
+- [X] T002 [P] Verify golangci-lint configuration is working by running `golangci-lint run ./input`
+- [X] T003 [P] Create examples/game/ directory for action mapping example
+- [X] T004 [P] Create tests/contract/ directory if it doesn't exist
 
 ---
 
@@ -35,11 +35,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 [P] Define GameInput interface in input/game.go with Start, Stop, Bind, IsActionPressed methods
-- [ ] T006 [P] Define gameInputImpl struct in input/game_impl.go with input, bindings map, and sync.RWMutex fields
-- [ ] T007 [P] Implement NewGameInput factory function in input/game.go (creates default Input if nil parameter)
-- [ ] T008 Verify foundational code compiles by running `go build ./input`
-- [ ] T009 Verify golangci-lint passes on new files by running `golangci-lint run ./input`
+- [X] T005 [P] Define GameInput interface in input/game.go with Start, Stop, Bind, IsActionPressed methods
+- [X] T006 [P] Define gameInputImpl struct in input/game_impl.go with input, bindings map, and sync.RWMutex fields
+- [X] T007 [P] Implement NewGameInput factory function in input/game.go (creates default Input if nil parameter)
+- [X] T008 Verify foundational code compiles by running `go build ./input`
+- [X] T009 Verify golangci-lint passes on new files by running `golangci-lint run ./input`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -53,24 +53,24 @@
 
 ### Tests for User Story 1 (TDD - MUST FAIL before implementation) ⚠️
 
-- [ ] T010 [P] [US1] Write unit test TestNewGameInput in input/game_test.go (tests factory with nil and non-nil Input)
-- [ ] T011 [P] [US1] Write unit test TestBindSingleKey in input/game_test.go (tests single action to single key binding)
-- [ ] T012 [P] [US1] Write unit test TestIsActionPressedUnbound in input/game_test.go (unbound action returns false, not error)
-- [ ] T013 [P] [US1] Write unit test TestStartStopDelegation in input/game_test.go (Start/Stop delegate to Input)
-- [ ] T014 [P] [US1] Write contract test TestBasicActionBinding in tests/contract/game_input_test.go (end-to-end test with real Input)
-- [ ] T015 [US1] Run tests to verify they FAIL by running `go test ./input -run TestGameInput -v` and `go test ./tests/contract -run TestBasicActionBinding -v`
+- [X] T010 [P] [US1] Write unit test TestNewGameInput in input/game_test.go (tests factory with nil and non-nil Input)
+- [X] T011 [P] [US1] Write unit test TestBindSingleKey in input/game_test.go (tests single action to single key binding)
+- [X] T012 [P] [US1] Write unit test TestIsActionPressedUnbound in input/game_test.go (unbound action returns false, not error)
+- [X] T013 [P] [US1] Write unit test TestStartStopDelegation in input/game_test.go (Start/Stop delegate to Input)
+- [X] T014 [P] [US1] Write contract test TestBasicActionBinding in tests/contract/game_input_test.go (end-to-end test with real Input)
+- [X] T015 [US1] Run tests to verify they FAIL by running `go test ./input -run TestGameInput -v` and `go test ./tests/contract -run TestBasicActionBinding -v`
 
 ### Implementation for User Story 1
 
-- [ ] T016 [P] [US1] Implement gameInputImpl.Start() method in input/game_impl.go (delegates to g.input.Start())
-- [ ] T017 [P] [US1] Implement gameInputImpl.Stop() method in input/game_impl.go (delegates to g.input.Stop())
-- [ ] T018 [US1] Implement gameInputImpl.Bind() method in input/game_impl.go (lock, update bindings map, unlock)
-- [ ] T019 [US1] Implement gameInputImpl.IsActionPressed() method in input/game_impl.go (RLock, lookup action, iterate keys calling Input.IsPressed, RUnlock)
-- [ ] T020 [US1] Add godoc comments to all exported types and functions in input/game.go and input/game_impl.go
-- [ ] T021 [US1] Verify User Story 1 tests PASS by running `go test ./input -run TestGameInput -v` and `go test ./tests/contract -run TestBasicActionBinding -v`
-- [ ] T022 [US1] Run golangci-lint and fix any violations by running `golangci-lint run ./input`
-- [ ] T023 [US1] Create basic example main.go in examples/game/ demonstrating single-key binding (jump→Space, fire→F, quit→ESC)
-- [ ] T024 [US1] Manual testing: run `go run examples/game/main.go` and verify Space, F, ESC work correctly
+- [X] T016 [P] [US1] Implement gameInputImpl.Start() method in input/game_impl.go (delegates to g.input.Start())
+- [X] T017 [P] [US1] Implement gameInputImpl.Stop() method in input/game_impl.go (delegates to g.input.Stop())
+- [X] T018 [US1] Implement gameInputImpl.Bind() method in input/game_impl.go (lock, update bindings map, unlock)
+- [X] T019 [US1] Implement gameInputImpl.IsActionPressed() method in input/game_impl.go (RLock, lookup action, iterate keys calling Input.IsPressed, RUnlock)
+- [X] T020 [US1] Add godoc comments to all exported types and functions in input/game.go and input/game_impl.go
+- [X] T021 [US1] Verify User Story 1 tests PASS by running `go test ./input -run TestGameInput -v` and `go test ./tests/contract -run TestBasicActionBinding -v`
+- [X] T022 [US1] Run golangci-lint and fix any violations by running `golangci-lint run ./input`
+- [X] T023 [US1] Create basic example main.go in examples/game/ demonstrating single-key binding (jump→Space, fire→F, quit→ESC)
+- [X] T024 [US1] Manual testing: run `go run examples/game/main.go` and verify Space, F, ESC work correctly
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -84,19 +84,19 @@
 
 ### Tests for User Story 2 (TDD - MUST FAIL before implementation) ⚠️
 
-- [ ] T025 [P] [US2] Write unit test TestBindMultipleKeys in input/game_test.go (bind 2+ keys to one action)
-- [ ] T026 [P] [US2] Write unit test TestMultipleKeysOrLogic in input/game_test.go (any key pressed → action returns true)
-- [ ] T027 [P] [US2] Write contract test TestMultipleKeysPerAction in tests/contract/game_input_test.go (WASD + arrows test)
-- [ ] T028 [US2] Run tests to verify they FAIL by running `go test ./input -run TestBindMultipleKeys|TestMultipleKeysOrLogic -v`
+- [X] T025 [P] [US2] Write unit test TestBindMultipleKeys in input/game_test.go (bind 2+ keys to one action)
+- [X] T026 [P] [US2] Write unit test TestMultipleKeysOrLogic in input/game_test.go (any key pressed → action returns true)
+- [X] T027 [P] [US2] Write contract test TestMultipleKeysPerAction in tests/contract/game_input_test.go (WASD + arrows test)
+- [X] T028 [US2] Run tests to verify they FAIL by running `go test ./input -run TestBindMultipleKeys|TestMultipleKeysOrLogic -v`
 
 ### Implementation for User Story 2
 
-- [ ] T029 [US2] Verify gameInputImpl.Bind() correctly stores slice of multiple keys (already implemented in US1, verify it works)
-- [ ] T030 [US2] Verify gameInputImpl.IsActionPressed() iterates all bound keys with early return (already implemented in US1, verify OR logic)
-- [ ] T031 [US2] Update examples/game/main.go to demonstrate multiple keys per action (add WASD + arrow key bindings for movement)
-- [ ] T032 [US2] Verify User Story 2 tests PASS by running `go test ./input -run TestBindMultipleKeys|TestMultipleKeysOrLogic -v`
-- [ ] T033 [US2] Run golangci-lint to ensure no new violations by running `golangci-lint run ./input`
-- [ ] T034 [US2] Manual testing: run `go run examples/game/main.go` and verify both arrow keys and WASD work for movement
+- [X] T029 [US2] Verify gameInputImpl.Bind() correctly stores slice of multiple keys (already implemented in US1, verify it works)
+- [X] T030 [US2] Verify gameInputImpl.IsActionPressed() iterates all bound keys with early return (already implemented in US1, verify OR logic)
+- [X] T031 [US2] Update examples/game/main.go to demonstrate multiple keys per action (add WASD + arrow key bindings for movement)
+- [X] T032 [US2] Verify User Story 2 tests PASS by running `go test ./input -run TestBindMultipleKeys|TestMultipleKeysOrLogic -v`
+- [X] T033 [US2] Run golangci-lint to ensure no new violations by running `golangci-lint run ./input`
+- [X] T034 [US2] Manual testing: run `go run examples/game/main.go` and verify both arrow keys and WASD work for movement
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -110,22 +110,22 @@
 
 ### Tests for User Story 3 (TDD - MUST FAIL before implementation) ⚠️
 
-- [ ] T035 [P] [US3] Write unit test TestBindReplace in input/game_test.go (rebind action to different key, old key no longer works)
-- [ ] T036 [P] [US3] Write unit test TestUnbind in input/game_test.go (bind action with empty keys removes binding)
-- [ ] T037 [P] [US3] Write unit test TestRebindingTakesEffectImmediately in input/game_test.go (no restart required)
-- [ ] T038 [P] [US3] Write contract test TestRuntimeRebinding in tests/contract/game_input_test.go (full rebinding flow)
-- [ ] T039 [US3] Run tests to verify they FAIL by running `go test ./input -run TestBindReplace|TestUnbind|TestRebindingTakesEffectImmediately -v`
+- [X] T035 [P] [US3] Write unit test TestBindReplace in input/game_test.go (rebind action to different key, old key no longer works)
+- [X] T036 [P] [US3] Write unit test TestUnbind in input/game_test.go (bind action with empty keys removes binding)
+- [X] T037 [P] [US3] Write unit test TestRebindingTakesEffectImmediately in input/game_test.go (no restart required)
+- [X] T038 [P] [US3] Write contract test TestRuntimeRebinding in tests/contract/game_input_test.go (full rebinding flow)
+- [X] T039 [US3] Run tests to verify they FAIL by running `go test ./input -run TestBindReplace|TestUnbind|TestRebindingTakesEffectImmediately -v`
 
 ### Implementation for User Story 3
 
-- [ ] T040 [US3] Verify gameInputImpl.Bind() replaces entire slice (already implemented in US1, no changes needed)
-- [ ] T041 [US3] Verify gameInputImpl.Bind() with zero keys deletes action from map (already implemented in US1, verify with empty slice)
-- [ ] T042 [US3] Add rebindAction helper function to examples/game/main.go (prompts for key, waits for input, rebinds)
-- [ ] T043 [US3] Add settingsMenu function to examples/game/main.go (shows rebind options, calls rebindAction)
-- [ ] T044 [US3] Update examples/game/main.go game loop to detect menu key and call settingsMenu
-- [ ] T045 [US3] Verify User Story 3 tests PASS by running `go test ./input -run TestBindReplace|TestUnbind|TestRebindingTakesEffectImmediately -v`
-- [ ] T046 [US3] Run golangci-lint to ensure no new violations by running `golangci-lint run ./input`
-- [ ] T047 [US3] Manual testing: run `go run examples/game/main.go`, enter settings, rebind controls, verify new bindings work
+- [X] T040 [US3] Verify gameInputImpl.Bind() replaces entire slice (already implemented in US1, no changes needed)
+- [X] T041 [US3] Verify gameInputImpl.Bind() with zero keys deletes action from map (already implemented in US1, verify with empty slice)
+- [X] T042 [US3] Add rebindAction helper function to examples/game/main.go (prompts for key, waits for input, rebinds)
+- [X] T043 [US3] Add settingsMenu function to examples/game/main.go (shows rebind options, calls rebindAction)
+- [X] T044 [US3] Update examples/game/main.go game loop to detect menu key and call settingsMenu
+- [X] T045 [US3] Verify User Story 3 tests PASS by running `go test ./input -run TestBindReplace|TestUnbind|TestRebindingTakesEffectImmediately -v`
+- [X] T046 [US3] Run golangci-lint to ensure no new violations by running `golangci-lint run ./input`
+- [X] T047 [US3] Manual testing: run `go run examples/game/main.go`, enter settings, rebind controls, verify new bindings work
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -135,14 +135,14 @@
 
 **Purpose**: Validate concurrency and performance requirements from spec
 
-- [ ] T048 [P] Create input/game_concurrent_test.go with TestConcurrentIsActionPressed (10 goroutines, 1000 calls each)
-- [ ] T049 [P] Add TestConcurrentBindAndQuery to input/game_concurrent_test.go (1 writer, 5 readers, verify no race conditions)
-- [ ] T050 [P] Create input/game_bench_test.go with BenchmarkIsActionPressed_SingleKey
-- [ ] T051 [P] Add BenchmarkIsActionPressed_MultipleKeys to input/game_bench_test.go (3-5 keys bound)
-- [ ] T052 [P] Add BenchmarkBind to input/game_bench_test.go
-- [ ] T053 Run concurrent tests with race detector by running `go test ./input -race -run TestConcurrent -v`
-- [ ] T054 Run benchmarks and verify <1ms per IsActionPressed by running `go test ./input -bench=BenchmarkGameInput -benchmem`
-- [ ] T055 Verify all tests pass including race detector by running `go test ./... -race -v`
+- [X] T048 [P] Create input/game_concurrent_test.go with TestConcurrentIsActionPressed (10 goroutines, 1000 calls each)
+- [X] T049 [P] Add TestConcurrentBindAndQuery to input/game_concurrent_test.go (1 writer, 5 readers, verify no race conditions)
+- [X] T050 [P] Create input/game_bench_test.go with BenchmarkIsActionPressed_SingleKey
+- [X] T051 [P] Add BenchmarkIsActionPressed_MultipleKeys to input/game_bench_test.go (3-5 keys bound)
+- [X] T052 [P] Add BenchmarkBind to input/game_bench_test.go
+- [X] T053 Run concurrent tests with race detector by running `go test ./input -race -run TestConcurrent -v`
+- [X] T054 Run benchmarks and verify <1ms per IsActionPressed by running `go test ./input -bench=BenchmarkGameInput -benchmem`
+- [X] T055 Verify all tests pass including race detector by running `go test ./... -race -v`
 
 ---
 
@@ -150,17 +150,17 @@
 
 **Purpose**: Documentation, examples, and final validation
 
-- [ ] T056 [P] Update input/doc.go to include GameInput interface documentation and usage examples
-- [ ] T057 [P] Add GameInput section to README.md (if exists) or CLAUDE.md with basic usage example
-- [ ] T058 [P] Verify all exported types have godoc comments by running `go doc input.GameInput` and related commands
-- [ ] T059 [P] Add example of accessing underlying Input from GameInput to examples/game/main.go (for rebinding menu)
-- [ ] T060 Run full test suite with coverage by running `go test -cover ./... | tee coverage.txt`
-- [ ] T061 Verify >80% coverage for GameInput public APIs per constitution
-- [ ] T062 Run golangci-lint on entire codebase by running `golangci-lint run ./...`
-- [ ] T063 Verify all golangci-lint checks pass (errcheck, revive, cyclop <30)
-- [ ] T064 Manual cross-platform testing: verify example works on available platforms (Linux/macOS/Windows)
-- [ ] T065 Performance validation: verify SC-002 (<1ms), SC-003 (100 actions), SC-007 (60fps) from spec
-- [ ] T066 Update CLAUDE.md GameInput features section with performance characteristics and examples
+- [X] T056 [P] Update input/doc.go to include GameInput interface documentation and usage examples
+- [X] T057 [P] Add GameInput section to README.md (if exists) or CLAUDE.md with basic usage example
+- [X] T058 [P] Verify all exported types have godoc comments by running `go doc input.GameInput` and related commands
+- [X] T059 [P] Add example of accessing underlying Input from GameInput to examples/game/main.go (for rebinding menu)
+- [X] T060 Run full test suite with coverage by running `go test -cover ./... | tee coverage.txt`
+- [X] T061 Verify >80% coverage for GameInput public APIs per constitution
+- [X] T062 Run golangci-lint on entire codebase by running `golangci-lint run ./...`
+- [X] T063 Verify all golangci-lint checks pass (errcheck, revive, cyclop <30)
+- [X] T064 Manual cross-platform testing: verify example works on available platforms (Linux/macOS/Windows)
+- [X] T065 Performance validation: verify SC-002 (<1ms), SC-003 (100 actions), SC-007 (60fps) from spec
+- [X] T066 Update CLAUDE.md GameInput features section with performance characteristics and examples
 
 ---
 
