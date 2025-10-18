@@ -1,0 +1,7 @@
+{
+	"mcpServers": {
+		"code-review": {
+			"command": "/Users/dshills/Development/Go/bin/mcp-code-review"
+		}
+	}
+}
