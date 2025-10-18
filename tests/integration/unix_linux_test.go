@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build linux
+// +build linux
 
 package integration_test
 
@@ -25,7 +25,7 @@ func TestUnixBackendTerminalStateSaveRestore(t *testing.T) {
 	fd := int(os.Stdin.Fd())
 
 	// Get original terminal state
-	originalState, err := unix.IoctlGetTermios(fd, unix.TIOCGETA)
+	originalState, err := unix.IoctlGetTermios(fd, unix.TCGETS)
 	if err != nil {
 		t.Fatalf("Failed to get original terminal state: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestUnixBackendTerminalStateSaveRestore(t *testing.T) {
 	}
 
 	// Verify we're in raw mode
-	rawState, err := unix.IoctlGetTermios(fd, unix.TIOCGETA)
+	rawState, err := unix.IoctlGetTermios(fd, unix.TCGETS)
 	if err != nil {
 		t.Fatalf("Failed to get raw state: %v", err)
 	}
@@ -60,7 +60,7 @@ func TestUnixBackendTerminalStateSaveRestore(t *testing.T) {
 	}
 
 	// Verify terminal state was restored
-	restoredState, err := unix.IoctlGetTermios(fd, unix.TIOCGETA)
+	restoredState, err := unix.IoctlGetTermios(fd, unix.TCGETS)
 	if err != nil {
 		t.Fatalf("Failed to get restored state: %v", err)
 	}
@@ -119,6 +119,6 @@ func TestUnixBackendIdempotent(t *testing.T) {
 // isTerminal checks if stdin is a terminal.
 func isTerminal() bool {
 	fd := int(os.Stdin.Fd())
-	_, err := unix.IoctlGetTermios(fd, unix.TIOCGETA)
+	_, err := unix.IoctlGetTermios(fd, unix.TCGETS)
 	return err == nil
 }
