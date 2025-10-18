@@ -65,11 +65,8 @@ func TestPollShutdownSignal(t *testing.T) {
 	done := make(chan struct{})
 
 	poll := func() (Event, bool) {
-		//nolint:staticcheck // Simplified test simulation of Poll behavior
-		select {
-		case <-done:
-			return Event{}, false
-		}
+		<-done
+		return Event{}, false
 	}
 
 	// Close shutdown channel
