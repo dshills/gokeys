@@ -5,9 +5,9 @@ package input
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"sync"
+	"time"
 	"unicode/utf8"
 
 	"golang.org/x/sys/unix"
@@ -28,7 +28,7 @@ type unixBackend struct {
 	fd            int
 	originalState *unix.Termios
 	parser        *SequenceParser
-	reader        io.Reader
+	file          *os.File
 	initialized   bool
 
 	// pendingBuf accumulates partial UTF-8 sequences and escape codes across Read() calls.
@@ -43,7 +43,7 @@ func newBackend() Backend {
 	return &unixBackend{
 		fd:     int(os.Stdin.Fd()),
 		parser: NewSequenceParser(),
-		reader: os.Stdin,
+		file:   os.Stdin,
 	}
 }
 
@@ -97,11 +97,12 @@ func (b *unixBackend) Init() error {
 	rawState.Cflag &^= unix.CSIZE
 	rawState.Cflag |= unix.CS8
 
-	// Set minimum characters to 0 (non-blocking read)
-	rawState.Cc[unix.VMIN] = 0
+	// Set minimum characters to 1 (blocking read - wait for at least 1 byte)
+	rawState.Cc[unix.VMIN] = 1
 
-	// Set timeout to 1 decisecond (100ms)
-	rawState.Cc[unix.VTIME] = 1
+	// Set timeout to 0 (no inter-byte timeout)
+	// We'll use SetReadDeadline for timeouts on subsequent reads
+	rawState.Cc[unix.VTIME] = 0
 
 	// Apply raw mode
 	if err := unix.IoctlSetTermios(b.fd, unix.TIOCSETA, &rawState); err != nil {
@@ -131,25 +132,32 @@ func (b *unixBackend) Restore() error {
 }
 
 // ReadEvent reads a single event from the terminal.
-// It performs blocking reads and handles multi-byte escape sequences
-// using VTIME timeout (no artificial delays).
+// It performs blocking reads and handles multi-byte escape sequences.
+// With VMIN=1, read() blocks until at least one byte is available.
 func (b *unixBackend) ReadEvent() (Event, error) {
 	// Get buffer from pool
 	bufPtr := readBufferPool.Get().(*[]byte)
 	defer readBufferPool.Put(bufPtr)
 	buf := *bufPtr
 
-	// Read chunk
-	n, err := b.reader.Read(buf)
+	// Clear any previous read deadline
+	_ = b.file.SetReadDeadline(time.Time{})
+
+	// Read first byte (blocking until data available with VMIN=1)
+	n, err := b.file.Read(buf)
 	if err != nil {
 		return Event{}, err
-	}
-	if n == 0 {
-		return Event{}, io.EOF
 	}
 
 	// CRITICAL: Copy data to persistent buffer before returning pooled buffer
 	b.pendingBuf = append(b.pendingBuf, buf[:n]...)
+
+	// Helper function for non-blocking reads with timeout
+	readWithTimeout := func(timeout time.Duration) (int, error) {
+		_ = b.file.SetReadDeadline(time.Now().Add(timeout))
+		defer b.file.SetReadDeadline(time.Time{})
+		return b.file.Read(buf)
+	}
 
 	// For UTF-8, check if we have a complete character
 	if len(b.pendingBuf) > 0 && b.pendingBuf[0] >= 0x80 && b.pendingBuf[0] != 0x1b {
@@ -157,7 +165,7 @@ func (b *unixBackend) ReadEvent() (Event, error) {
 		if !utf8.FullRune(b.pendingBuf) {
 			// Incomplete UTF-8 - read more bytes (up to 4-byte UTF-8 max)
 			if len(b.pendingBuf) < utf8.UTFMax {
-				n, err := b.reader.Read(buf)
+				n, err := readWithTimeout(50 * time.Millisecond)
 				if err == nil && n > 0 {
 					b.pendingBuf = append(b.pendingBuf, buf[:n]...)
 				}
@@ -165,13 +173,13 @@ func (b *unixBackend) ReadEvent() (Event, error) {
 		}
 	}
 
-	// For escape sequences, continue reading until VTIME timeout
+	// For escape sequences, continue reading until timeout
 	if len(b.pendingBuf) > 0 && b.pendingBuf[0] == 0x1b {
 		// Read additional bytes until timeout or max escape sequence length
 		for len(b.pendingBuf) < 16 { // Max escape sequence length
-			n, err := b.reader.Read(buf)
+			n, err := readWithTimeout(50 * time.Millisecond)
 			if err != nil || n == 0 {
-				break // VTIME timeout or error - no more data
+				break // Timeout or error - no more data
 			}
 			b.pendingBuf = append(b.pendingBuf, buf[:n]...)
 		}
@@ -184,7 +192,7 @@ func (b *unixBackend) ReadEvent() (Event, error) {
 	if err != nil && err.Error() == "incomplete UTF-8 sequence" {
 		// Try one more read for incomplete UTF-8
 		if len(b.pendingBuf) < utf8.UTFMax {
-			n, readErr := b.reader.Read(buf)
+			n, readErr := readWithTimeout(50 * time.Millisecond)
 			if readErr == nil && n > 0 {
 				b.pendingBuf = append(b.pendingBuf, buf[:n]...)
 				// Retry parse
