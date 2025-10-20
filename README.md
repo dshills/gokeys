@@ -6,6 +6,16 @@
 [![codecov](https://codecov.io/gh/dshills/gokeys/branch/main/graph/badge.svg)](https://codecov.io/gh/dshills/gokeys)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+> **⚠️ ALPHA SOFTWARE WARNING**
+>
+> This project is currently in alpha stage. While we strive for quality and stability, you should expect:
+> - Potential bugs and rough edges
+> - Breaking API changes without prior notice
+> - Incomplete documentation in some areas
+> - Features that may be refined or removed
+>
+> **Not recommended for production use** without thorough testing and understanding of the codebase. We welcome early adopters, testers, and contributors! Please report issues on our [issue tracker](https://github.com/dshills/gokeys/issues).
+
 A vendor-grade, cross-terminal keyboard input system for Go. Provides clean, normalized keyboard input handling across different terminals and platforms, with optional high-level action mapping for game development.
 
 ## Features
